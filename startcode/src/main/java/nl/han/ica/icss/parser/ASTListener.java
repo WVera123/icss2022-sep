@@ -4,10 +4,7 @@ package nl.han.ica.icss.parser;
 import nl.han.ica.datastructures.IHANStack;
 import nl.han.ica.icss.ast.*;
 import nl.han.ica.datastructures.HANStack;
-import nl.han.ica.icss.ast.literals.ColorLiteral;
-import nl.han.ica.icss.ast.literals.PercentageLiteral;
-import nl.han.ica.icss.ast.literals.PixelLiteral;
-import nl.han.ica.icss.ast.literals.ScalarLiteral;
+import nl.han.ica.icss.ast.literals.*;
 import nl.han.ica.icss.ast.selectors.ClassSelector;
 import nl.han.ica.icss.ast.selectors.IdSelector;
 import nl.han.ica.icss.ast.selectors.TagSelector;
@@ -91,6 +88,9 @@ public class ASTListener extends ICSSBaseListener {
 		} else if (text.endsWith("%")) {
 			int value = Integer.parseInt(text.replace("%", ""));
 			return new PercentageLiteral(value);
+		} else if (text.equals("TRUE") || text.equals("FALSE")) {
+			return new BoolLiteral(text.equals("TRUE"));
+
 		} else {
 			return new ScalarLiteral(Integer.parseInt(text));
 		}
@@ -100,8 +100,29 @@ public class ASTListener extends ICSSBaseListener {
 		PropertyName propertyName = new PropertyName(ctx.getText());
 		currentContainer.push(propertyName);
 	}
-	@Override public void exitPropertyName(ICSSParser.PropertyNameContext ctx) {
+	@Override
+	public void exitPropertyName(ICSSParser.PropertyNameContext ctx) {
 		PropertyName propertyName = (PropertyName) currentContainer.pop();
 		currentContainer.peek().addChild(propertyName);
+	}
+	@Override
+	public void enterVariableReference(ICSSParser.VariableReferenceContext ctx) {
+		VariableReference varRef = new VariableReference(ctx.getText());
+		currentContainer.push(varRef);
+	}
+	@Override
+	public void exitVariableReference(ICSSParser.VariableReferenceContext ctx) {
+		VariableReference varRef = (VariableReference) currentContainer.pop();
+		currentContainer.peek().addChild(varRef);
+	}
+	@Override
+	public void enterVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
+		VariableAssignment varAss = new VariableAssignment();
+		currentContainer.push(varAss);
+	}
+	@Override
+	public void exitVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
+		VariableAssignment varAss = (VariableAssignment) currentContainer.pop();
+		currentContainer.peek().addChild(varAss);
 	}
 }

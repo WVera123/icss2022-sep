@@ -46,19 +46,23 @@ stylesheet: (variableAssignment | stylerule)* EOF;
 // Var := 10px;
 variableAssignment: variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
 
-expression: literal | variableReference;
+expression: literal | expression (STAR) expression | expression (MINUS | PLUS) expression | variableReference;
 
 // a { color: #ff0000; }
 stylerule: selector body;
 // a, .menu, #menu
 selector: LOWER_IDENT | CLASS_IDENT | ID_IDENT;
 
-body: OPEN_BRACE (declaration)* CLOSE_BRACE;
+body: OPEN_BRACE (declaration | variableAssignment | ifelse)* CLOSE_BRACE;
 
 //width: 100px;
 declaration: propertyName COLON expression SEMICOLON;
 
 literal: TRUE | FALSE | COLOR | PERCENTAGE | PIXELSIZE | SCALAR;
+
+ifelse: IF BOX_BRACKET_OPEN expression BOX_BRACKET_CLOSE body else?;
+
+else: ELSE body;
 
 propertyName: LOWER_IDENT;
 variableReference: CAPITAL_IDENT;
