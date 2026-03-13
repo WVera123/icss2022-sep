@@ -38,6 +38,7 @@ COLON: ':';
 PLUS: '+';
 MIN: '-';
 MUL: '*';
+DIV: '/';
 ASSIGNMENT_OPERATOR: ':=';
 
 //--- PARSER: ---
@@ -46,23 +47,23 @@ stylesheet: (variableAssignment | stylerule)* EOF;
 // Var := 10px;
 variableAssignment: variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
 
-expression: literal | expression (STAR) expression | expression (MINUS | PLUS) expression | variableReference;
+expression: literal | expression (MUL | DIV) expression | expression (PLUS | MIN) expression| variableReference;
 
 // a { color: #ff0000; }
 stylerule: selector body;
 // a, .menu, #menu
 selector: LOWER_IDENT | CLASS_IDENT | ID_IDENT;
 
-body: OPEN_BRACE (declaration | variableAssignment | ifelse)* CLOSE_BRACE;
+body: OPEN_BRACE (declaration | variableAssignment | ifClause)* CLOSE_BRACE;
 
 //width: 100px;
 declaration: propertyName COLON expression SEMICOLON;
 
 literal: TRUE | FALSE | COLOR | PERCENTAGE | PIXELSIZE | SCALAR;
 
-ifelse: IF BOX_BRACKET_OPEN expression BOX_BRACKET_CLOSE body else?;
+ifClause: IF BOX_BRACKET_OPEN expression BOX_BRACKET_CLOSE body elseCLause?;
 
-else: ELSE body;
+elseCLause: ELSE body;
 
 propertyName: LOWER_IDENT;
 variableReference: CAPITAL_IDENT;

@@ -5,6 +5,7 @@ import nl.han.ica.datastructures.IHANStack;
 import nl.han.ica.icss.ast.*;
 import nl.han.ica.datastructures.HANStack;
 import nl.han.ica.icss.ast.literals.*;
+import nl.han.ica.icss.ast.operations.*;
 import nl.han.ica.icss.ast.selectors.ClassSelector;
 import nl.han.ica.icss.ast.selectors.IdSelector;
 import nl.han.ica.icss.ast.selectors.TagSelector;
@@ -124,5 +125,30 @@ public class ASTListener extends ICSSBaseListener {
 	public void exitVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
 		VariableAssignment varAss = (VariableAssignment) currentContainer.pop();
 		currentContainer.peek().addChild(varAss);
+	}
+	@Override
+	public void enterExpression(ICSSParser.ExpressionContext ctx) {
+		Operation operation = null;
+		if (ctx.PLUS() != null) {
+			operation = new AddOperation();
+		} else if (ctx.MIN() != null) {
+			operation = new SubtractOperation();
+		} else if (ctx.MUL() != null) {
+			operation = new MultiplyOperation();
+		} else if (ctx.DIV() != null){
+			operation = new DivideOperation();
+		}
+
+		if (operation != null) {
+			currentContainer.push(operation);
+		}
+
+	}
+	@Override
+	public void exitExpression(ICSSParser.ExpressionContext ctx) {
+		if(ctx.getChildCount() == 3) {
+			Operation operation = (Operation) currentContainer.pop();
+			currentContainer.peek().addChild(operation);
+		}
 	}
 }
