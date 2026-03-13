@@ -16,7 +16,6 @@ PIXELSIZE: [0-9]+ 'px';
 PERCENTAGE: [0-9]+ '%';
 SCALAR: [0-9]+;
 
-
 //Color value takes precedence over id idents
 COLOR: '#' [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f];
 
@@ -41,9 +40,25 @@ MIN: '-';
 MUL: '*';
 ASSIGNMENT_OPERATOR: ':=';
 
-
-
-
 //--- PARSER: ---
-stylesheet: EOF;
+stylesheet: (variableAssignment | stylerule)* EOF;
 
+// Var := 10px;
+variableAssignment: variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
+
+expression: literal | variableReference;
+
+// a { color: #ff0000; }
+stylerule: selector body;
+// a, .menu, #menu
+selector: LOWER_IDENT | CLASS_IDENT | ID_IDENT;
+
+body: OPEN_BRACE (declaration)* CLOSE_BRACE;
+
+//width: 100px;
+declaration: propertyName COLON expression SEMICOLON;
+
+literal: TRUE | FALSE | COLOR | PERCENTAGE | PIXELSIZE | SCALAR;
+
+propertyName: LOWER_IDENT;
+variableReference: CAPITAL_IDENT;
