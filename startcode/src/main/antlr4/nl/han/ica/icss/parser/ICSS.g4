@@ -61,9 +61,9 @@ declaration: propertyName COLON expression SEMICOLON;
 
 literal: TRUE | FALSE | COLOR | PERCENTAGE | PIXELSIZE | SCALAR;
 
-ifClause: IF BOX_BRACKET_OPEN expression BOX_BRACKET_CLOSE body elseCLause?;
+ifClause: IF BOX_BRACKET_OPEN expression BOX_BRACKET_CLOSE body elseClause?;
 
-elseCLause: ELSE body;
+elseClause: ELSE body;
 
 propertyName: LOWER_IDENT;
 variableReference: CAPITAL_IDENT;

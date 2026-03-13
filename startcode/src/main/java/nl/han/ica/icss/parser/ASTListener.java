@@ -138,11 +138,9 @@ public class ASTListener extends ICSSBaseListener {
 		} else if (ctx.DIV() != null){
 			operation = new DivideOperation();
 		}
-
 		if (operation != null) {
 			currentContainer.push(operation);
 		}
-
 	}
 	@Override
 	public void exitExpression(ICSSParser.ExpressionContext ctx) {
@@ -150,5 +148,28 @@ public class ASTListener extends ICSSBaseListener {
 			Operation operation = (Operation) currentContainer.pop();
 			currentContainer.peek().addChild(operation);
 		}
+	}
+	@Override
+	public void enterIfClause(ICSSParser.IfClauseContext ctx) {
+		IfClause ifClause = new IfClause();
+		currentContainer.push(ifClause);
+	}
+
+	@Override
+	public void exitIfClause(ICSSParser.IfClauseContext ctx) {
+		IfClause ifClause = (IfClause) currentContainer.pop();
+		currentContainer.peek().addChild(ifClause);
+	}
+
+	@Override
+	public void enterElseCLause(ICSSParser.ElseCLauseContext ctx) {
+		ElseClause elseClause = new ElseClause();
+		currentContainer.push(elseClause);
+	}
+
+	@Override
+	public void exitElseCLause(ICSSParser.ElseCLauseContext ctx) {
+		ElseClause elseClause = (ElseClause) currentContainer.pop();
+		currentContainer.peek().addChild(elseClause);
 	}
 }
