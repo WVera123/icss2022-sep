@@ -18,7 +18,6 @@ public class Checker {
         variableTypes = new HANLinkedList<>();
         checkNode(ast.root);
     }
-    //CH06
     private void checkNode(ASTNode node) {
         boolean createsScope = node instanceof Stylesheet || node instanceof Stylerule || node instanceof IfClause || node instanceof ElseClause;
         if (createsScope) {
@@ -48,7 +47,7 @@ public class Checker {
         ExpressionType type = getExpressionType(assignment.expression, variableTypes);
         variableTypes.getFirst().put(assignment.name.name, type);
     }
-    // Check if variable is defined in any active scope
+    // CH01, CH06
     private void checkVariableReference(VariableReference reference) {
         ExpressionType type = getExpressionType(reference, variableTypes);
         if (type == ExpressionType.UNDEFINED) {
