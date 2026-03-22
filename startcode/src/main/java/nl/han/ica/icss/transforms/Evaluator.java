@@ -5,6 +5,7 @@ import nl.han.ica.datastructures.IHANLinkedList;
 import nl.han.ica.icss.ast.*;
 import nl.han.ica.icss.ast.literals.*;
 import nl.han.ica.icss.ast.operations.*;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,9 +35,16 @@ public class Evaluator implements Transform {
         }
         // Recursively transform children
         if (node instanceof Stylesheet) {
-            for (ASTNode child : node.getChildren()) {
+            Stylesheet sheet = (Stylesheet) node;
+            ArrayList<ASTNode> newBody = new ArrayList<>();
+            for (ASTNode child : sheet.getChildren()) {
                 transformNode(child);
+                // Only add it back to the tree if it isn't a variable assignment.
+                if (!(child instanceof VariableAssignment)) {
+                    newBody.add(child);
+                }
             }
+            sheet.body = newBody;
         }
         // Flatten if statements inside stylerules
         else if (node instanceof Stylerule) {
@@ -75,7 +83,10 @@ public class Evaluator implements Transform {
             }
             else {
                 transformNode(child);
-                flattened.add(child);
+                // Only add child if it isn't a variable assignment.
+                if (!(child instanceof VariableAssignment)) {
+                    flattened.add(child);
+                }
             }
         }
         return flattened;
